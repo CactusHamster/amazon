@@ -112,6 +112,14 @@
         aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#b5f5d8" : "#e37474"
         aspectRatioButton.onclick = aspectRatioButtonClicked
 
+        const downloadButton = document.getElementById("downloadButton")
+        downloadButton.onclick = () => {
+            let link = document.createElement('a');
+            link.download = 'amazon.png';
+            link.href = document.getElementById('canvas').toDataURL()
+            link.click();
+        }
+
         document.onkeypress = function () {
             if (document.activeElement !== textbox) textbox.focus()
         }
