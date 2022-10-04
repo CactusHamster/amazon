@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Amazon</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <style>
+        @font-face {
+            font-family: 'amazon'; /*a name to be used later*/
+            src: url('OfficinaSansStd-Bold.otf'); /*URL to font*/
+        }
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+        *:focus {
+            outline: none;
+        }
+        #inputText {
+            width: 80%;
+            padding: 0%;
+            margin: 0%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            height: 10%;
+            border-width: 3px;
+            font-size: 300%;
+            border-style: solid;
+            border-color: black;
+        }
+        #canvas {
+            width: 100%;
+            height: 90%;
+            position: absolute;
+            top: 10%;
+            left: 0%;
+        }
+        input[type=button] {
+            position: absolute;
+            top: 0px;
+            height: 10%;
+            padding: 0%;
+            margin: 0%;
+            width: 10%;
+            font-size: 150%;
+            font-family: amazon;
+            border-width: 10px;
+            border-style: solid;
+            color: black;
+            border-color: #ffcf83;
+        }
+        #downloadButton {
+            left: 90%;
+        }
+        #aspectRatioButton {
+            left: 80%;
+            font-size: 120%;
+            background-color: #b5f5d8;
+        }
+    </style>
+    <body>
+        <label><input id="inputText" type="text" title="add text"></label>
+        <input id="aspectRatioButton" type="button" title="stretchy arrow" value="AspectRatio: ON">
+        <input id="downloadButton" type="button" value="Download!">
+        <canvas id="canvas"></canvas>
+    </body>
+    <script>
+    (async function () {
+        let image = await new Promise (resolve => {
+            let image = new Image()
+            function imageLoadCallback(a) {
+                image.removeEventListener("load", imageLoadCallback)
+                resolve(image)
+            }
+            image.addEventListener("load", imageLoadCallback)
+            image.src = "arrow.png"
+        })
+        const canvas = document.getElementById("canvas")
+        const ctx = canvas.getContext("2d")
+        const textbox = document.getElementById("inputText")
+        const aspectRatioButton = document.getElementById("aspectRatioButton")
+        let useAspectRatio = true
+        let fontSize = 200
+        function render () {
+            const text = textbox.value
+            canvas.height = window.innerHeight * 0.9
+            canvas.width = window.innerWidth
+            ctx.font = `${fontSize}px amazon`
+            let center = [canvas.width / 2, canvas.height / 2]
+            let width = ctx.measureText(text).width
+            let xOffset = center[0] - (width / 2);
+            ctx.fillText(text, xOffset, center[1] - 10)
+            
+            let iHeight = useAspectRatio ? (width / image.width) * image.height : fontSize * 0.75
+            ctx.drawImage(image, xOffset, center[1], width, iHeight)
+
+        }
+        aspectRatioButtonClicked = function (e) {
+            useAspectRatio = !useAspectRatio
+            //aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#b5f5d8" : "#e37474"
+            aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#88baa3" : "#bd5353"
+            aspectRatioButton.value = `AspectRatio: ${useAspectRatio ? "ON" : "OFF"}`
+            aspectRatioButton.onmouseenter = () => aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#88baa3" : "#bd5353"
+            aspectRatioButton.onmouseleave = () => aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#b5f5d8" : "#e37474"
+            render()
+        }
+        aspectRatioButton.onmouseenter = () => aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#88baa3" : "#bd5353"
+        aspectRatioButton.onmouseleave = () => aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#b5f5d8" : "#e37474"
+        aspectRatioButton.value = `AspectRatio: ${useAspectRatio ? "ON" : "OFF"}`
+        aspectRatioButton.style.backgroundColor = useAspectRatio ?  "#b5f5d8" : "#e37474"
+        aspectRatioButton.onclick = aspectRatioButtonClicked
+
+        document.onkeypress = function () {
+            if (document.activeElement !== textbox) textbox.focus()
+        }
+        textbox.onchange = render
+        textbox.oninput = render
+        window.addEventListener("resize", render)
+        render()
+    })()
+
+    </script>
+</html>
